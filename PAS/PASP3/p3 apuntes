@@ -1,0 +1,268 @@
+--- Sesion 1 --- 26-03-2019
+
+
+- Se hara el examen similar a los ejercicios de las practicas
+- El examen es desde 0, no es rellenar, es desde 0.
+
+- bash : Mejora del shell de unix.
+- Es un lenguaje de script, no un programa compilado.
++ portables pero - veloz
+
+- Las variables en una parte del codigo puede ser una cadena y en otra un numero. Pero tratar de no hacer esto porque puede crear confusion.
+
+echo -> El printf de C. Es un comando del sistema, no es nativo del sistema.
+
+- Bash puede ejecutar comandos del sistema, eso es algo de su potencial.
+
+- Para ejecutar es como un ejecutable normal. Esto es un interprete.
+
+- ./ Se debe de poner porque esa carpeta no esta en el path del sistema operativo. Cuando cualquier carpeta no esta en el path, si no esta, debo de indicar la ruta, pero para evitar eso hay una variable de entorno que se llama PATH.
+
+echo $PATH
+
+
+PATH = $PATH: .   <--- Para ponerlo por defecto. Poner en la consola
+
+.profile -> PATH : <ruta_de_practicas>
+
+
+Con esto el SO tiene nuestro path. Pero ahora mismo para empezar usamos el primero.
+
+
+
+echo <espacio> -n   
+
+
+El echo por defecto, el caracter de escape no lo tiene en cuenta. Si quiero que lo tenga en cuenta tengo que poner echo -e
+
+
+Se puede ejecutar tambien comandos
+
+Scripts para realizar tareas que son repetitivas
+
+
+No puede haber espacios entre el la variable, el = y la cadena. NO PONER IGUALES
+
+echo $STR  ---> para sacar el mensaje desde una variable se debe de usar el $
+
+bin bash siempre ponerlo en la primera linea.
+
+
+La extension de los ficheros de bash es .sh
+
+
+'' dentro de "", interpreta como un literal lo que hay en ''.
+
+Ojo ver las '""', muestra las comillas.
+
+
+- Export: Establece para todos los procesos las variables. En el caso de que no este, los procesos hijos no tendran disponibles variables que si estan disponibles en el padre.
+
+- Con PS1 puedes cambiar cosas del prompt (Creo que es lo del nombre donde escribimos)
+
+- Las variables intrinsecas, son simbologias. 
+
+- El n-esimo argumento : Indicar la posicion del arguemnto.
+
+- Leer una variable: read variable
+
+
+echo -n  hace que no me pille el salto de linea
+
+!!!!!!!!!!!!!!
+
+ $(comando) --> Permite usar la informacion de ese comando para el programa 
+ 			   ^
+ `comando`	---|
+
+
+- Busca fichero que tenga..... pues uso el comando find con lo que se acaba de mostrar antes y obtengo esa informacion. !!!!!
+
+
+echo y hacer la lectura despues, pongo ; read <variable>
+
+Las expresiones se puden poner de tres formas
+· Si uso el let y luego una cadena donde se va a usar una expresion, se va a igualar a algo, permite espacios entre la cadena y el igual***.
+
+· =$(($x+$y))
+· =$[$x+$y]
+
+
+- En los if PONER ESPACIO, RESPETAR ESPACIOS QUE VIENEN EN EL EJEMPLO.
+- El && se pone fuera, no dentro del corchete
+- Si pongo [[...]] Dentro de esto puedo poner todas las expresiones juntas y evalua expresions regulares, cosa que no hace el primero explicado.
+
+
+-n s --> Si la logitud de la cadena es mayor a 0, devuelve true.
+
+
+No hace falta declarar las variables
+
+Ojo para la comparacion de numeros hay unos operadores ya establecidos
+
+Comparacion de ficheros, el algo que no trae c.
+
+
+Se puede usar una variable intermedia a donde guardamos la cadena dada por un comando o directamente ponemos el comando donde iria la variable intermedia.
+
+Los operadores logicos son los mismos que C, pero hay añadidos unos.
+
+
+En numeroRango1lf.sh esta mal escrito.
+
+La ultima instruccion tiene que ser un doble signo de ;;
+La de por defecto *)...
+
+Termina con case pero al reves, esac
+
+
+
+En el for, a la derecha de in hay UNA LISTA!! En esta lista puedo poner un comando o una expresion. Es una lista generica.
+
+
+
+En moodle se encuentran los comandos mas usados. Con eso podemos hacer practicamente la practica.
+
+
+For entre dos parentesis, permise usar la terminologia de c. Se meteria en la 3a parte del for.
+
+
+
+Tres formas equivalentes de asignacion
+
+let "i = $i +1"
+i=$[$i+1]
+i=$(($i+1))		<--- Segun él, se pueden poner tambien espacios.
+
+
+until lo mismo, "hasta que..."
+
+Aqui las funciones NO TIENEN PARAMETROS. Si no que usan variables intrinsecas.
+
+Los argumentos que usamos en la funcion son $1, $2, $3...
+
+
+<   toma de un fichero
+
+
+Las tuberias son muy potentes.
+Permiten redireccionar la entrada o salida hacia OTRO COMANDO.
+
+Es equivalente la tuberia con el "<" mencionado anteriormente
+
+Ojo a lo de cat << EOF
+
+Para caracteres se puede tambien -m
+
+
+
+
+--- Sesion 2 --- 02-04-2019
+
+
+
+
+Ej1- 
+
+ Arg1: Carpeta => $1 (La de moodle)
+ cant1= $(find $1 -name "*.c" ) | wc -l [para que me tome todos]
+ cant2= $(find $1 -name "*.h" ) | wc -l [para que me tome todos]
+
+ echo "Tenemos $cant1 archivos con extension .c y $cant2 archivos con extension .h"
+
+ //Se puede con for, pero no es optimo
+//Cada vez que uso un fichero intermedio preguntar si puedo usar un "pid"
+ //Buscar si el for tiene algo para buscar y ahorra for
+
+ for x in $(find $1 -type f -name "*.c" -o -type f -name "*.h")
+ 	do
+ 		echo "El fichero $x tiene $(cat $x|wc -l) lineas y $(cat $x | wc -m) caracteres"
+ 	done | sort -nr -k 8
+ 	
+
+
+ Ej2-
+
+ Arg1: Carpeta
+ Arg2: Numero bytes
+
+ //Comprobar si los argumentos estan bien etc
+ echo "Nombre, longitud usuario, fecha modificacion, fecha acceso , tamaño , bloques, permisos y ejecutable"
+ for x in $(find $1 -size $2 -type F -o -size $2 -type F)
+ 	do 
+ 		echo "$(basename $x);"
+ 		$(stat -c %y $x)
+ 		$(stat -c %a $x)
+ 	done 
+
+ longname = $(stat -c %u $x | wc -w)-1  
+
+
+ Ej3-
+
+ Arg1: Carpeta
+ Arg2: Umbral1
+ arg3: umbral 
+
+ Comandos 
+ $(Find $1 -sizze "$umbral1.c -typedef)")
+
+ -mkdir carpeta
+
+ -cp -> compilado
+
+ -rm -rf completa
+
+
+ Ej4-
+
+ echo "el numero ..... $(find $1 -maxdepth 1 -type f | wc -l)"
+ echo "$(who | awk { print $1} | sort | uniq)"
+
+ wc -l test.txt
+
+ 15 list.txt | awl {print $1}
+
+ awk {print $1}
+
+ for x in $(find)
+ 	do
+ 		echo "$(basename $x)
+ 		done | grep $c -o |wc -l
+ 	echo "veces un ......??""
+
+
+
+
+ Ej5- 
+
+ 	Arg1, Arg2 ... Argn : fichero
+
+
+ 	date = $(date +%s)
+
+ 	for x in $(find copia -type f)
+ 		do
+ 			septim <- $(stat $x -c %x)
+ 		done
+
+ 	for -czf copia.seg | copia......................... $*
+
+
+
+ Ej6-
+
+	arg1: carpeta
+	Function listar_combinar()
+	{
+		<ml>
+			<li>-----</li>
+			<li>-----</li>
+		</ml>
+
+	}
+
+	echo "<html>"
+	echo "<head"
+	echo "<title> <h3> LISTADO DE DORECTPROP DF $1 <h3> <..... cosas de html"
+	echo "<body>"

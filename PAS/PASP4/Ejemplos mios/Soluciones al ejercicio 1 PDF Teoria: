@@ -1,0 +1,6 @@
+Soluciones al ejercicio 1 PDF Teoria:
+
+1. grep -E '(\+|\-)[0-9]+(,[0-9]+)?' ejemplo_grep.txt
+
+
+2. 

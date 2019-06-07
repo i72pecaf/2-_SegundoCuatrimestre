@@ -1,0 +1,11 @@
+- Listar registros de un fichero
+- Fichero a vector
+- Vector a fichero
+- Añadir datos a un fichero
+- Posicionamiento del apuntador
+- Tamaño del fichero
+- Numero de registros
+- Ver registro i-esimo
+- Búscar datos en un fichero
+- Modifcar datos de un registro
+- Borrar registros (logico y fisico)

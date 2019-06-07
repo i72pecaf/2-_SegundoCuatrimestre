@@ -1,0 +1,164 @@
+----------------------------------
+| Funciones de ficheros de texto |
+----------------------------------
+
+===================================================================================================
+
+-----------------------
+| Apertura de fichero |
+-----------------------
+
+· FILE* fopen (const char* name, const char* modo)
+
+	- Abre el fichero indicado en 'name' y lo abre en el modo indicado por 'modo'
+	- Devuelve:
+		> Puntero a FILE
+		> NULL si hay algun problema durante su apertura (Ver errores de apertura.)
+
+	- Esta funcion se iguala a la variable FILE*, esta variable nos sirve para <usar> el fichero.
+	Ejemplo:
+
+	f=fopen("libreria.txt","w");
+	f=fopen(variable,"r");
+
+===================================================================================================
+
+---------------------
+| Cierre de fichero |
+---------------------
+
+· int fclose(FILE* f)
+	
+	- Cierra el flujo del fichero indicado en 'f'. Vuelca el buffer, sea de salida o de entrada.
+	- Devuelve: 0  si todo va bien y EOF si ha habido algun problema.
+
+	Ejemplo:
+
+	fclose(f);
+
+===================================================================================================
+
+-------------------
+| E/S con formato |
+-------------------
+
+· int fprintf(FILE* f, const char* formato, [variables])
+
+	- Escribe en el fichero el dato que se haya indicado. Es como un printf pero para ficheros.
+	- El tipo de dato se encuentra en 'formato' y la variable en '[variables]'.
+	- OJO: Se puede introducir mas de un tipo de caracter.
+	- La función devuelve el numero de caracteres escritos en el fichero, en caso de error devuelve un valor negativo.
+
+	- Esto sirve para escribir distintos tipos de datos a la vez, ya sea int, char, float...
+	- OJO: Ver si hace faltan poner &.
+	- El numero de caracteres devuelto sirve para montar un bucle. (!)
+
+	Ejemplo:
+
+	fprintf(f, "%s %i %f %s"  , nombre, edad, nota_media, "Esto es una prueba");
+
+
+
+· int fscanf(FILE* f, const char *formato, [variables])
+
+	- Lee del fichero el tipo de dato indicado, es como un scanf para ficheros. (Es el fichero el que nos da los datos).
+	- El tipo de dato se encuentra en 'formato' y la variable en '[variables]'.
+	- OJO: Se puede introducir mas de un tipo de caracter.
+	- La funcion devuelve EOF si se ha alcanzado el final del fichero o si se produce un error. Devuelve el numero de 
+	objetos convertidos y asignados. (El numero de datos leidos).
+
+	- Permite leer varios datos de distinto tipo.
+	- De nuevo, el EOF y el numero de datos leidos nos permite hacer bucles.
+	- OJO: Ver si hace falta poner &
+
+	Ejemplo:
+
+	fscanf(f, "%s %i", "patata", var1);
+
+===================================================================================================
+
+-----------------
+| E/S de líneas |
+-----------------
+
+· char* fgets(char* s, int n, FILE* f)
+
+	- Lee 'n-1' caracteres del fichero indicado por 'f' y los guarda en la cadena 's'.
+	- OJO IMPORTANTE! : Deja de leer cuando se encuentra '\n'.
+	- La funcion devuelve la variable 's' o devuelve NULL si encuentra EOF (Fin de fichero) o algun error.
+
+	- El EOF permite realizar el bucle.
+	- OJO: Esta funcion permite leer lineas del fichero de texto. O parte de ella a causa de 'n'.
+
+	Ejemplo:
+
+	fgets(var, 999, f); //Lee hasta 999 caracteres o hasta que se encuentre \n.
+
+
+· int fputs(const char* s)
+
+	- Escribe la cadena 's' en el fichero indicado por 'f'.
+	- Devuelve un valor NO NEGATIVO si todo ha ido bien, si hay error de escritura devuelve EOF.  
+	- De nuevo, el EOF nos permite hacer un bucle con el while.
+
+	Ejemplo: 
+
+	fputs(var,f);
+
+===================================================================================================
+
+---------------------------------
+| Funciones de un solo caracter |
+---------------------------------
+
+· int fgetc(FILE* f)
+
+	- Lee del fichero 'f' el caracter que apunta el cursor, después avanza el cursor al siguiente caracter.
+	- Devuelve EOF si hay fin de fichero o error, si no devuelve el caracter leido PERO OJO, ES INT!!!!!!
+	
+	Ejemplo:
+
+	fgetc(f); //xd
+
+
+· int fputc(int c, FILE* f)
+
+	- Escribe el caracter 'c' en el fichero indicado por 'f'.
+	- Devuelve EOF en caso de error, si no devuelve el mismo caracter escrito PERO OJO, ES INT!!!!!!
+
+	Ejemplo:
+
+	fputc('c',f);
+	fputc(var_char,f);
+
+===================================================================================================
+
+----------------------------------------------
+| Resumen de algunos de los bucles generales |
+----------------------------------------------
+
+---> Leer caracter a caracter:
+
+	int c;
+	while(c=(fgetc(...)!=EOF)){
+		[...]
+	}
+
+
+
+---> Leer linea a linea:
+
+	while((fgets(...))!=NULL){
+		[...]
+	}
+
+
+---> while(fscanf(...)==4){ 	//4 o el numero que sea
+		[...]
+	}
+		//Otra forma seria:
+
+---> while(fscanf(...)!=EOF){
+		[...]
+	}
+

@@ -1,0 +1,518 @@
+----- PAS PRACTICA 3 -----
+
+Shell -> Programa que recoje los comandos del ordenador y se los proporciona al SO para que los ejecute
+
+En GNU/Linux se utiliza el Bash (_Bourne Again SHell). Es una version mejorada del shell de Unix.
+
+Terminal -> Es un programa que emula el terminal de un ordenador, iniciando una sesion de shell interactiva.
+
+El shell tambien es un lenguaje de scripting. El script se usa sobretodo para realizar tareas repetitivas, pero son mas
+lentos y menos potentes que un lenguaje de programacion como tal.
+El script es portable. Todo lo que se puede hacer en un shell se puede hacer con un script. Es muy potente con ficheros, procesos...
+
+
+
+
+- Para ejecutar un script que hayamos creado, debemos de poner :  chmod u+x nombre_programa
+
+- En los programas que usemos, poner al inicio: 	#!bin/bash  . Asi el se puede asignar el interprete correcto.
+
+
+
+----- echo -----
+
+· Es un comando del sistema operativo
+· Imprime (en stdout) el contenido de lo que se le pasa como argumento.
+· En el manual esta el -n -e -E
+
+
+
+- No hace falta declarar variables ni indicar el tipo. Cuando se usan se crean y se asignan. Todas las variales son cadenas, pero pueden usarse como numeros con operadores que los utilicen.
+- Al asignar una variable con un valor, no se deben de poner espacios con el ' = ' , ya que si no lo interpreta.
+
+
+
+- Si dentro de las comillas ponemos: \<caracter> ese caracter sea cual sea se mostrara como un caracter más de la cadena: 
+	"Se ve el \" en la cadena"
+
+- Las comillas <  ' '  >  muestran literal lo que se encuentran entre ellas, aunque se muestre una variable $var . 
+- Las comillas <  " "  >  muestran una cadena pero permite especificar variables internas. Se ve el valor de var con $var.
+- Esto se aplica tanto si se hace directamente un echo sobre las comillas como si se guardan sobre una variable.
+
+
+
+- Hay dos tipos de variables.
+
+	· Locales : 
+	· De entorno: Son las establecidas por el sistema operativo. Realmente son scripts del sistema que se ejecutan al ejecutar el bash.
+				  --> Se pueden acceder a estas variables con el comando:  env
+				  --> Hay variables globales que ya se pueden ver directamente, por ejemplo $USER , $HOME ...
+
+
+----- export -----
+
+· Hace que una variable "global" permite que los hijos del proceso puedan usar esta variable.
+
+
+
+
+---- Variables intrínsecas -----
+
+· Son variables por defecto de Bash y aportan informacion util.
+
+		$#	: numero de argumentos de la lınea de comandos (argc).
+		$n 	: n-esimo argumento de la lınea de comandos (argv[n]), si n es mayor que 9 utilizar $fng.
+		$*	: todos los argumentos de la lınea de comandos (como un sola cadena).
+		$@	: todos los argumentos de la lınea de comandos (como un array).
+		$!	: pid del ultimo proceso que se lanzo con &.
+		$-	: opciones suministradas a la shell.
+		$?	: valor de salida la ultima orden ejecutada (ver exit).
+
+
+
+----- exit -----
+
+· Permite para terminar la ejecucion de un script, devuelve un valor de salida entre 0 y 255. Este valor esta disponible por el padre que invocó el script.
+
+· Si llamamos al script sin parametros, se tomara como valor de salida el último comando ejecutado (Igual que $?)
+
+
+
+----- read ----- 
+
+· Lee por teclado y lo almacena en una variable.
+· Se puede mostrar un mensaje y leer a la vez:
+
+		read -p "Otra forma es asi:" r1				#La variable al final!!
+
+
+
+
+----- Sustitucion de comandos -----
+
+- Con los acentos hacia atras:  `<comando>`   se permiten introducir entre ellos comandos y obtener la informacion de esos comandos.
+- La informacion del comando ejecutado se puede guardar en variables
+
+- Tambien se puede hacer: $(<comando>) para ejecutar el comando. (OJO los parentesis se deben de poner.)
+
+
+
+
+----- Operadores aritméticos -----
+
+- Son los de siempre:
+
+	+  :  Suma
+	-  :  Resta
+	*  :  Multiplicacion
+	/  :  Division
+	** :  Exponenciación
+	%  :  Módulo
+
+	Pero si operamos, se muestra literalm,ente la operacion, no el resultado por ello hay que usar alguna de las siguientes formas para mostrar el resultado:
+
+
+	Comando:
+
+	·  let  : Se pone delante de una variable que va a utilizar otras variables:   let Y = X + 1
+
+	Expresiones aritmeticas:
+
+	·  $[expresion]
+	·  $((expresion))
+
+
+
+
+
+----- Condicional If -----
+
+· Hay que respetar los espacios en la estructura basica:
+
+	if [ <expresion> ];
+	then
+		<instruciones>
+	elif [ expresion ];
+	then
+		<instrucciones>
+	else
+		<instrucciones>
+	fi
+
+
+· elif (else if) y else son opcionales y se pueden repetir para condiciones futuras.
+
+· La expresion que se puede comparar puede ser:
+
+	- Comparar cadenas
+	- Comparar numeros
+	- Comprobar ficheros (!)
+	- Combinacion de estos mediante operadores logicos
+
+· Operadores logicos para cadenas:
+	
+	- s1 == s2   ---> Igual a 
+	- s1 != s2   ---> Distinto a
+	-   -n s     ---> Longitud mayor que cero
+	-   -z s     ---> Longitud igual a cero
+
+
+· Operadores logicos para numeros:
+
+	- n1 -lt n2 Menor que
+	- n1 -gt n2 Mayor que
+	- n1 -le n2 Menor o igual que
+	- n1 -ge n2 Mayor o igual que
+	- n1 -eq n2 Igual
+	- n1 -ne n2 Distinto
+
+
+
+· Ejemplos:
+
+	[ s1 ]  ---> True si s1 NO esta vacia, sino false.
+
+
+· OJO: Poner dobles corchetes permite EXPRESIONES REGULARES
+
+	- [[ s1 == s2* ]]  
+
+
+
+
+· Comprobacion de ficheros: 
+
+	-e f1  -->  Existe el fichero f1?
+	-s f1  -->  f1 tiene tama~no mayor que cero?
+	-f f1  -->  Es f1 un fichero normal?
+	-d f1  -->  Es f1 un directorio?
+	-l f1  -->  Es f1 un enlace simb´olico?
+	-r f1  -->  Tienes permiso de lectura sobre f1?
+	-w f1  -->  Tienes permiso de escritura sobre f1?
+	-x f1  -->  Tienes permiso de ejecuci´on sobre f1?
+
+
+
+
+
+
+----- Condicional switch (case) -----
+
+· La estructura generica es:
+		
+		case $var in
+			val1) 
+				<instrucciones>;;
+			val2)
+				<instrucciones>;;
+			*)
+				<instrucciones>;;
+		esac
+
+
+· *) Es el caso por defecto. Se puede evaluar a la vez dos valores:   val1 | val2
+
+
+
+
+
+----- Condicional for -----
+
+· El ciclo for permite iterar una variable con los elementos de una lista. Itera a lo largo de una lista de variables:
+
+	for <var> in <lista>
+	do
+		<instrucciones
+	done
+
+
+· Si no se pone la parte " in <lista> " , entonces se itera con los argumentos pasados al programa ($1, $2, ...)
+
+· ...... in $(seq 8)    Nos permite iterar desde el 1 hasta n numeros. Este caso de 1 a 8.
+
+
+
+· Aun asi se puede tener un ciclo for como el de C : 
+
+	for (( EXP1; EXP2; EXP3 ))
+	do
+		<instrucciones>
+	done
+
+
+
+
+----- Vectores / Arrays -----
+
+· Hay distintas formas de declarar y utilizar vectores:
+
+Crear vector 				-->	vector[i]=Valor
+								vector=(Valor 1 Valor2 Valor3 ... ValorN)
+
+Acceder a un elemento 		-->	${vector[i]}
+
+Acceder a todos los valores --> ${vector[*]}
+
+Longitud del vector 		--> ${#vector[@]}
+
+
+
+
+
+----- Estructura while y until (hasta que) -----
+
+· La estructura es:
+
+	while [<expresion_evaluada_a_true>]
+	do
+		<instrucciones>
+	done
+
+
+
+· La estructura del until eS:
+
+	until [...] 
+	do
+		<instrucciones>
+	done
+
+
+
+
+
+----- Funciones -----
+
+· Las funciones se declaran con:  nombre_funcion()  y ya.
+· Se llama a la funcion:  nombrefuncion
+· Si se le quiere pasar argumentos, estos son variables intrinsecas y se indican con $variable justo al lado al llamar a la funcion. (Ver prueba7.sh)
+
+
+
+
+----- Para depuracion en bash -----
+
+· Bash sustituye las variables de la linea y los comandos.
+
+· Se puede poner argumentos donde se encuentra el #!/bin/bash para poder asi depurar los programas:
+	·  -x  ---> Muestra cada linea del script antes de ser ejecutada sustituyendos las variables y comandos
+	·  -v  ---> Muestra cada linea del script antes de ser ejecutada tal y como se escribe.
+
+
+
+
+----- Descriptores de ficheros ----
+
+	· stdin    =  	Entrada estandar 	       =   Descriptor: 0   =   Teclado
+	· stdout   = 	Salida estandar 	 	   =   Descriptor: 1   =   Consola
+	· stdin    =  	Salida de error estandar   =   Descriptor: 2   =   Consola
+
+
+- Esto permite tomar informacion de un fichero o guardar informacion de un fichero.
+
+- IMPORTANTE: Ver el prueba8.sh
+
+- Esto es redireccionar entrada/salida de comandos a partir de ficheros
+
+
+
+----- Tuberias -----
+
+- Ahora con tuberias podemos redireciconar entrada/salida de comandos a comandos, entre sí, sin usar ficheros.
+
+- La estructura de las tuberias es:
+
+	comando1 | comando2
+
+--> La ENTRADA del comando2 se toma a partir de la SALIDA del comando1 (salida estandar o de error)
+--> "El comando 2 toma del comando1"
+
+- Se pueden encadenar mas de dos comandos.
+Ejemplo que da el mismo resultado:
+
+		cat archivoDatos.txt | grep -i prueba
+		grep -i prueba < archivoDatos.txt
+
+
+
+
+
+----- Comando tee -----
+- Mediante el comando tee podemos redireccional la salida por pantalla y por un fichero al mismo tiempo.
+
+	echo "Esto es una prueba" | tee ficheroPrueba
+
+--> Saldra por pantalla y guardara el contenido en el fichero
+
+
+
+
+----- Comando cat -----
+- Lee todo un fichero y lo muestra por su salida correspondiente (por defecto consola, pero se puede indicar otro).
+- Estructura:
+
+	cat <nombre_fichero.loquesea>
+
+
+
+
+----- HereDocuments (mirar en profundidad) -----
+
+- Permite mostrar cadenas de caracteres hasta que se alcance la cadena que indica el final del "texto"
+- La estructura es:
+
+	cat << caracter_final
+
+		<texto, el que sea>
+
+	caracter_final
+
+
+--> Se mostrara todo lo que esté despues del cat << caracter_final PERO no se incluye el caracter_final.
+
+
+
+
+----- head y tail -----
+
+- Muestran las primeras o ultimas n lineas de un fichero, correspondientemente.
+Ejemplo:
+
+	head -2 prueba9.txt
+
+
+
+----- wc -----
+
+- Muesta el numero de lineas, palabras o caracteres de uno o varios ficheros. 
+---> Ver los parametros de este comando para poder saber que mostrar.
+
+
+
+----- more -----
+
+- Muestra archivos grandes, pantalla a pantalla
+
+
+
+----- cmp -----
+
+- Compara dos ficheros y dice a partir de que caracter son distintos
+
+	cmp fichero1 fichero2
+
+
+
+----- sort -----
+
+- sort [fichero]: ordena la entrada estandar o un fichero.
+	
+	sort   :      ordena entrada estandar por orden alfabetico.
+	sort -r:   ordena entrada estandar por orden inverso.
+	sort -m:   ordena entrada estandar por orden numerico (de caracteres).
+	sort -t c: cambia el caracter separador al caracter c.
+	sort -k 3: cambia la clave de ordenacion a la tercera
+			   columna (por defecto, primera columna)
+
+- Se pueden combinar estos comandos: -nr  --> Ordena de mayor a menos por numero de caracteres
+
+- El comando ordena el fichero y lo muestra por pantalla. Si se quiere guardar esta informacion ordenada
+en un fichero hariamos:
+
+	sort fichero > ficheroOrdenado
+
+- Se puede hacer con mas de un fichero:
+
+	sort fichero1 fichero2 > fichero3
+
+
+
+----- grep -----
+
+
+- Filtra el texto de uno o varios ficheros y muestra las lineas que cumplan un patron en concreto:
+
+	grep <opciones> patron <ficheros>
+
+
+	-c  ---> Cuenta el numero de lineas con ese patron
+	-l  ---> Muestra el numero de ficheros con ese patron
+	-i  ---> No es sensible a las mayusculas
+
+- Tambien vale la entrada standar
+- En el patron se puede poner:
+
+	- <  ^  > ---> Significa comienzo de linea
+	- <  $  > ---> Significa fin de linea
+	- <  .  > ---> Significa cualquier caracter
+
+
+
+
+----- find -----
+
+- Varias formas:
+
+· find <carpeta> -name "patron"   ---> Busca ficheros dentro de <carpeta> que cumplan con el "patron". Por defecto es " . "
+
+
+· find <carpeta> -size N 		---> Busca ficheros con tamaño N. +N para mayor y -N menor que N.
+
+
+· find <carpeta> -user <usuario> ---> Busca los ficheros que tiene como dueño a <usuario>
+
+
+- OJO: Seguido se indica el COMANDO que va a usar esta informacion dada por find
+
+
+
+----- basename -----
+
+· basename <fichero> <extension>  ---> Devuelve el nombre del fichero sin indicar su carpeta ni su extension.
+
+
+
+---- dirname -----
+
+· dirname <fichero>  ---> Devuelve la carpeta donde se encuentra un fichero en concreto
+
+
+
+---- stat ----
+
+· stat <fichero> ---> Muestra informacion sobre un fichero
+
+- Tiene distintos "parametros" que podemos añadir al comando para modificar la salida y obtener diferentes propiedades del fichero. Para ello consular: man stat
+
+
+
+---- tr ----
+
+· tr '<caracter1>' '<caracter2>'  ---> Remplaza el caracter 1 por el caracter 2. Muestra en el stdin
+
+· Si se le añade -d elimina el caracter indicado en la salida.
+
+
+
+---- Expansion de llaves -----
+
+- Permite que se generen combinaciones de cadenas de texto
+
+· cadena1{c1,c2,c3,...}
+
+· {c1..c2}  --> Para valores desde c1 hasta c2, por ejemplo del 1 al 4.
+
+
+
+
+---- Problemas con los vectores y cadenas ----
+
+- Cuando intentamos construir un array a partir de una cadena, bash utiliza determinados caracteres para separar cada uno de
+los elementos del array.
+
+- Estos caracteres estan en la variable de entorno IFS y por defecto son el espacio, el tabulador y el salto de linea.
+
+- Esto nos puede producir problemas si estamos procesando elementos con espacios (por ejemplo, nombres de ficheros con
+espacios):
+
+Solucion: cambiar el IFS para que solo se utilice el \n:

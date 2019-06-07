@@ -1,0 +1,208 @@
+----------------------------------
+| Funciones de ficheros binarios |
+----------------------------------
+
+===================================================================================================
+
+- En ficheros binarios, cada valor se almacena en binario, tal cual está representado en memoria.
+- Cada valor se almacena con 4 bytes.
+- Cada vez que se procesa un registro, leer o escribir, se incrementa el cursor automaticamente.
+
+===================================================================================================
+
+---------------------------------
+| Apertura y cierre de ficheros |
+---------------------------------
+
+· FILE* fopen (const char* nombre, const char*modo)
+
+	- Abre el fichero indicado en "nombre" en el modo indicado en "modo".
+	- Devulve:
+		> FILE* --> Si todo ha ido correcto
+		> NULL  --> Si ha habido algún problema
+
+	Ejemplo:
+
+	f=fopen("fichero.txt",w);
+
+
+· int fclose(FILE* f)
+
+	- Cierra el fichero indicado por f.
+	- Devuelve 0 si todo va bien y EOF si ha habido algún problema.
+
+
+===================================================================================================
+
+--------------------------------
+| Entrada y salida de ficheros |
+--------------------------------
+
+· size_t fread (void* ptr, size_t tam, size_t num, FILE* f)
+
+	- La funcion lee del fichero indicado por "f" un total de "num" objetos de tamaño "tam" y los mete en "ptr".
+	- Devuelve:
+		> El numero de objetos leidos.
+		> Si el numero de objetos leidos es menor que "num" significa que ha habido algún error o se ha alcanzado fin de fichero.
+
+	- Avanza el curso de ficheros.
+
+	- Ejemplo:
+
+	while(( leidos = fread(buffer , sizeof(byte), 999, f))>0){
+		...
+	}
+
+
+· size_t fwrite (const void* ptr, size_t tam, size_t num, FILE* f)
+
+	- La funcion escribe en el fichero indicado por "f" un total de "num" objetos de tamaño "tam" de la variable "ptr".
+	- Devuelve:
+		> El numero de objetos escritos
+		> Si el numero de objetos escritos es menor que "num" significa que ha habido algún error o que se ha alcanzado fin de fichero.
+
+	- El cursor del fichero avanza los bytes escritos.
+
+===================================================================================================
+
+-----------------------
+| Posición del cursor |
+-----------------------
+
+· int fseek (FILE* f, long desp, int origen)
+
+	- La función establece la posición del cursor. Se desplaza "desp" bytes desde el lugar indicado por "origen".
+	- Este "origen" puede ser:
+		--> SEEK_SET // 0 : Inicio del fichero
+		--> SEEK_CUR // 1 : Posición actual del cursor
+		--> SEEK_END // 2 : Fin del fichero
+
+	- Devuelve:
+		> !=0 si se produce algún error.
+		> Si no se produce ningún error, devuelve 0.
+
+	- Ejemplo:
+		fseek(f, 100, SEEK_END)
+
+
+· long ftell (FILE* f)
+
+	 - Recibe el indicador del fichero "f"
+	 - Devuelve: 
+	 	> El número de bytes desde el principio hasta la posición actual del cursor.
+	 	> -1L si hay algún error.
+
+
+===================================================================================================
+
+--------------
+| Miscelaneo |
+--------------
+
+------------------------------ Tamaño de los registros ------------------------------
+
+nº de registros = bytes del fichero / bytes de cada registro
+
+
+--> Para saber el tamaño del fichero. 
+		1. Situo el cursor al final del fichero (SEEK_END) desplazandome 0 bytes. (Ojo el tipo de dato 0L o 0) 
+		2. Utilizo ftell(f) para calcular el tamaño del fichero.
+
+--> Para cuanto ocupa cada registros (bytes por registro)
+		1. Utilizo el operador sizeof:
+			sizeof(struct cliente)	// sizeof(int) //	sizeof(float)
+
+
+Finalmente, calculo el nº de registros con los datos anteriores y la formula del inicio.
+
+
+
+· Bucle para leer un fichero binario:
+--------------------------------------
+	- Previamente deberemos de haber abierto el fichero en modo lectura binaria. (rb).
+
+	while( fread(&bufferLectura , sizeof(int) , 1 , f) ==1 ){
+		...
+	}
+
+	- Estaré leyendo el fichero, guardando en bufferLectura, guardo cada fread un solo elemento de tamaño sizeofint 
+	del fichero referenciado por f.
+
+
+
+
+· Pasar de  vector a fichero   y de   fichero a vector
+-------------------------------------------------------
+
+	- En ambos casos, se debe de saber el tamaño del vector.
+	- Se leera y se escribirá el vector "de una sentada", con un solo fread y fwrite. Es escribir el vector de golpe.
+	- Ojo hay que ver si se debe de abrir para añadir o no. ('ab' o 'wa')
+
+	> Vector a fichero:
+
+		fwrite(vector, sizeof(int), 10, f) //En sizeof va el tipo de dato del vector. El 10 es el nº de elementos del vector
+
+		- No hace falta hacer un bucle. Podemos igualarlo a una variable que nos daria el nº de elementos escritos.
+
+
+	> Fichero a vector:
+
+		fread(vector, sizeof(int), 10, f)
+
+		- Igual que lo anterior, podemos ver el nº de bytes leidos, tampoco hace falta hacer un bucle.
+
+
+· Añadir datos a un fichero
+----------------------------
+	
+	- En el caso de que el fichero este ya creado, habria que abrirlo con 'ab', para no eliminar el fichero.
+
+
+
+· Busqueda de un fichero
+-------------------------
+
+	- Si lo que queremos es mostrar aquellos datos que cumplan X requerimiento:
+		1. Recorremos el fichero viendo cada dato
+		2. Dentro del bucle, vamos comparando los datos según necesitemos
+
+	- Si queremos mostrar un unico dato:
+		1. Recorremos el fichero
+		2. Se busca el dato en questión mediante 'if' o lo que necesitemos
+		3. Usamos una variable para "cortar" el bucle en el caso de que lo encontremos
+			Esta variable la comprobamos en la misma linea que la del bucle.
+			Es decir, hacemos un while que contenga la funcion fread Y otra condicion que sea: (encontrado!=1) por ejemplo.
+
+
+
+· Ver el registro i-esimo
+--------------------------
+	- La idea es situar el cursor en el elemento que deseemos.
+	- Queremos leer el registro 'i' del fichero:
+		1. Abrirmos el fichero en modo lectura
+		2. Hacemos un fseek donde multiplicamos 'i' por sizeof y situamos el cursor en el inicio (SEEK_SET // 0)
+		3. Realizamos un fread, leyendo solo un elemento en el caso de que queramos consultar solo ese elemento.
+
+
+
+· Modificar un registro
+------------------------
+
+	1. Localizamos el registro a buscar (con Ver registro i-esimo) (Ojo que despues de leer se aumenta el cursor)
+	2. Modificamos el dato correspondiente (Si es una estructura, modificamos el campo correspondiente)
+	3. Nos aseguramos que el cursor apunta al mismo campo del que hemos leido, deberemos de mover el cursor.
+	4. Escribimos la variable auxiliar en el registro a modificar, "machacando" el antiguo registro.
+
+	Ojo, para retroceder el vector en el paso 3) podemos hacer:
+
+		fseek(f, -(int)sizeof(struct client), SEEK_CUR);
+
+
+
+· Borrar un fichero
+--------------------
+
+	- El borrado lógico basicamente es escribir un espacio en blanco en aquel registro el cual borramos.
+	- Esto permite que se puedan introducir datos en ese nuevo registro, pero no borra realmente esa línea.
+	- Seria modificar un registro pero en el paso 3) escribimos un "" en la variable auxiliar.
+		Ojo, para copiar una cadena a en otra debemos de usar: strcpy(cad1,cad2) se copia lo de la derecha en la izquierda, como si fuera un operador. (En cad1 estará lo de cad2).
