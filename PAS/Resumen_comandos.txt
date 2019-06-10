@@ -206,7 +206,7 @@ if [ expresion ] && [ expresion ];
 
 	read -p "Introduce la variable: " var 		#Permite leer una variable pero mostrando un mensaje
 
-
+	read -t 3 -p "Tienes 3 segundos para introducir una letra: " letra
 
 ----- Comando find -----
 
