@@ -1,0 +1,263 @@
+---------------------
+|Comandos Bash Linux|
+---------------------
+
+- Al inicio del script hay que escribir:
+
+	#!/bin/bash
+
+- Selecciona el interprete de comandos para nuestro script.
+- Una vez terminado el fichero script, para ejecutarlo hay que cambiar los permisos:
+
+	chmod u+x
+
+- Tras esto se podra ejecutar, lo ejecutamos con:
+
+	./script.sh
+
+- Hay que especificar la ruta completa, el '.' permite no tener que escribirla entera.
+
+
+
+----- Variables, escape, etc -----
+
+- Asignar ->  var="texto"
+
+- Usar su valor en un comando:  $var
+
+- Ojo, no poner espacios entre la asignación.
+
+
+- Se pueden escapar caracteres con: '\'
+
+
+- Si usamos comillas dobles " ", se mostrara las variables con $var, etc.
+- Si usamos comillas simples ' ', es como si cada caracter estubiera escapado con '\'.
+
+
+- Si usamos export, la variable seguida podrá ser usada por los procesos hijos.
+- Si el hijo modifica la variable, no se ve reflejada en la del padre.
+
+- Variables de entorno importantes:
+
+	$HOME --> Path del directorio home
+	$PATH --> Path de donde se localiza el script
+	$USER --> User que ejecuta el script
+
+
+
+- Variables intrinsecas: 
+
+	$# --> Numero de argumentos en la linea de comandos
+	$n --> Donde 'n' es el numero del argumento introducido
+	$* --> Todos los argumentos como una cadena
+	$@ --> Todos los argumentos como un vector
+	$! --> Pid del ultimo proceso que se lanzo con &
+	$- --> Opciones suministradas a la shell
+	$? --> Valor de la ultima orden ejecutada
+
+
+- Para poder usar comandos:
+
+	`comando`
+
+- Tambien se puede usar:
+
+	$(comando)
+
+- Esto ultimo esta mucho mejor
+
+	echo $(pwd)			#Muestra el resultado de pwd por la pantalla.
+
+
+- Los comandos de operar numeros son los mismos, pero para la exponenciacion es **
+
+
+- Puede darse el caso de que no se realicen bien las operaciones con numeros, porque se tomen como texto.
+- Para ello se puede usar 'let' o $((expresion))
+
+
+----- Sentencia IF -----
+
+	if [ expresion ];
+	then
+		<instrucciones>
+	elif [ expresion ];
+		then 
+			<instrucciones>
+		else
+			<instrucciones>
+		fi
+
+- Respetar los espacios.
+
+- Comparacion de cadenas:
+	s1 == s2
+	s1 != s2
+	-n s --> Longitud mayor que cero
+	-z s --> Longitud igual a cero
+
+	OJO: Se puede usar expresiones regulares si en el IF ponemos [[expresion]]
+
+
+- Comparacion de numeros:
+	- Mirar por internet xd
+
+
+- Chequeo de ficheros:
+	- Mirar por internet xd
+
+- Para poner mas comparaciones:
+
+if [ expresion ] && [ expresion ];
+....
+
+	! --> No
+	&& --> Y
+	|| --> O
+
+
+
+- Estructura del switch:
+
+	case $var in
+		varlor1)
+			instrucciones;;
+		valor2)
+			instrucciones;;
+		valor3|valor4)
+			instrucciones;;
+		*)							#Caso que no sea los otros
+			instrucciones;;
+	esac
+
+
+
+- Estructura del for:
+
+	for x in lista
+	do
+		...
+	done
+
+
+- Si eliminamos la parte de 'lista', entonces se usaran los argumentos al programa, $1, $2,...,$n en ese orden.
+
+
+
+- Podemos guardar el resultado de un comando en un fichero con: '>'.
+- Podemos pasar la salida de un comando a otro mediante tuberias: '|'.
+
+
+
+----- Comando echo -----
+
+- Imprime por la salida predefinida (en principio, el terminal) el contenido de lo que se le pasa como argumento.
+- Es un comando como tal.
+
+
+	echo "Hola, esto es un ejemplo"
+
+	echo -e    #Esto permite introducir un salto de linea.
+
+
+
+
+----- Comando mkdir -----
+
+- Permite crear carpetas.
+
+	mkdir ejercicios		#Crea EN DONDE ESTA EL SCRIPT, la carpeta ejercicios
+
+	mkdir /home/usuario/Desktop/PAS/ejercicios		#Crea en la ruta indicada la carpeta.
+
+	mkdir ejercicios_PAS ejercicios_MP		#Crea ambas carpetas, se pueden crear varias tambien indicando las rutas.
+
+
+
+----- Comando cp -----
+
+- Copia un fichero en otra carpeta o en el mismo sitio pero con distinto nombre.
+
+	cp programa1.c programa1_copia.c 		#Copia el fichero programa1.c en la misma carpeta pero con distinto nombre
+
+	cp programa1.c /home/usuario/logs		#Copia el fichero de la carpeta donde esta el script en la ruta destino
+
+	cp log1.txt log2.txt log3.txt /home/usuario/logs/
+											#Copia varios ficheros en la ruta destino
+
+	cp /home/usuario/logs/* /home/usuario/nueva-carpeta-logs
+											#Copia todos los ficheros de la ruta indicada en la ruta destino
+
+
+
+----- Comando rm -----
+
+- El comando permite borrar un fichero o directorio.
+- Mirar el man para saber los parametros
+
+
+
+----- Comando read -----
+
+- Permite leer por teclado y lo guarda en una variable:
+
+	read patata			#Guarda en la variable patata el contenido introducido por terminal
+
+	read -p "Introduce la variable: " var 		#Permite leer una variable pero mostrando un mensaje
+
+
+
+----- Comando find -----
+
+- Permite buscar en una carpeta indicada por su ruta. Busca aquellos ficheros y directorios que coincidan con
+lo que le pasemos como argumento.
+- La estructura es:
+
+	find [ruta] [expresion a buscar] [acciones]
+
+- Buscar por un numbre en concreto:
+
+	find / -name "patata.txt"		#Busca todo lo que tenga como nombre patata.txt
+
+	find / -name "*.txt"			#Busca todo lo que sea .txt, usa expresion regular
+
+	find /home -user i72pecaf		#Busca todo aquello que sea del usuario i72pecaf
+
+- Obviamente se pueden combinar entre ellos para buscar por un nombre y que sea de un usuario en concreto.
+
+- Buscar en varios directorios y de un grupo en concreto:
+
+	find / /bin /var -name Fran -group root
+
+- Buscar aquello que sean ficheros
+
+	find . -type f 		#Para ficheros
+	find . -type d  	#Para directorios
+
+- Ver el PDF de la practica para ver que mas opciones hay.
+
+
+
+----- Comando sort -----
+
+- Realiza una ordenacion de lo que se le pase y lo muestra por la salida estandar. Se puede pasar a otro comando.
+
+- Se pueden ordenar el contenido de un carpeta usando un ls y luego sort:
+
+	ls -l | sort -r +4n
+
+- Ver las opciones en el pdf.
+
+
+
+----- Comando stat -----
+
+- Muestra diferente informacion del directorio o fichero.
+
+
+
+----- Comando wc -----
+
+- Permite contar lineas, palabras o caracteres de un fichero.
+- Ojo, este no viene en el PDF que deja en el examen, pero en el man si.
